@@ -1,0 +1,62 @@
+{
+  "name": "@yc-w-cn/douyin-mcp-server",
+  "version": "1.0.0",
+  "description": "抖音视频解析与下载工具，支持 MCP 协议",
+  "main": "dist/index.js",
+  "bin": {
+    "douyin-mcp-server": "dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "pnpm run build"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "douyin",
+    "tiktok",
+    "video",
+    "download",
+    "ai",
+    "automation"
+  ],
+  "author": {
+    "name": "Yuchen Wang",
+    "email": "contact@wangyuchen.cn",
+    "url": "https://github.com/yc-w-cn"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yc-w-cn/douyin-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yc-w-cn/douyin-mcp-server/issues"
+  },
+  "homepage": "https://github.com/yc-w-cn/douyin-mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "axios": "^1.13.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b"
+}
