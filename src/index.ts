@@ -154,6 +154,10 @@ server.registerTool(
 // 注册资源
 server.registerResource(
   "douyin://video/{video_id}",
+  {
+    title: "抖音视频信息",
+    description: "获取抖音视频的基本信息"
+  },
   async (uri, { video_id }) => {
     try {
       const shareUrl = `https://www.iesdouyin.com/share/video/${video_id}`;
