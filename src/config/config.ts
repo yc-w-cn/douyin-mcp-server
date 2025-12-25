@@ -13,8 +13,6 @@ export function validateEnvironment(): void {
 // 初始化工作目录
 export function initializeWorkDir(): void {
   try {
-    if (!WORK_DIR) return;
-    
     if (!fs.existsSync(WORK_DIR)) {
       fs.mkdirSync(WORK_DIR, { recursive: true });
       logInfo(`✅ 工作目录已创建: ${WORK_DIR}`);
