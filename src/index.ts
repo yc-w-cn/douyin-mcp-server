@@ -1,4 +1,4 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from 'zod/v3';
 
@@ -153,7 +153,8 @@ server.registerTool(
 
 // 注册资源
 server.registerResource(
-  "douyin://video/{video_id}",
+  "douyin-video",
+  new ResourceTemplate("douyin://video/{video_id}", { list: undefined }),
   {
     title: "抖音视频信息",
     description: "获取抖音视频的基本信息"
