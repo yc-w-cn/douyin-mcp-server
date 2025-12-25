@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
 import { WORK_DIR } from '../config';
+import { logError, logWarn } from '../utils/logger';
 
 // 请求头，模拟移动端访问
 const HEADERS = {
@@ -114,7 +115,7 @@ export class DouyinProcessor {
       const filename = `${videoInfo.videoId}.mp4`;
       const filepath = path.join(this.tempDir, filename);
       
-      console.error(`正在下载视频: ${videoInfo.title}`);
+      logError(`正在下载视频: ${videoInfo.title}`);
       
       const response = await axios.get(videoInfo.url, {
         headers: HEADERS,
@@ -124,7 +125,7 @@ export class DouyinProcessor {
       const totalSize = parseInt(response.headers['content-length'] || '0', 10);
       let downloadedSize = 0;
       
-      return new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         const writer = fs.createWriteStream(filepath);
         
         response.data.on('data', (chunk: Buffer) => {
@@ -148,13 +149,15 @@ export class DouyinProcessor {
         response.data.pipe(writer);
         
         writer.on('finish', () => {
-          console.error('\n✅ 视频下载完成');
-          resolve(filepath);
+          logError('\n✅ 视频下载完成');
+          resolve();
         });
         
         writer.on('error', reject);
         response.data.on('error', reject);
       });
+
+      return filepath;
     } catch (error) {
       throw new Error(`下载视频失败: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -190,7 +193,7 @@ export class DouyinProcessor {
           fs.unlinkSync(filePath);
         }
       } catch (error) {
-        console.warn(`无法删除文件 ${filePath}:`, error);
+        logWarn(`无法删除文件 ${filePath}:`, error);
       }
     }
   }

@@ -275,9 +275,9 @@ server.registerPrompt(
 );
 
 // 启动服务器
-console.log("🚀 启动抖音 MCP Server...");
+logInfo("🚀 启动抖音 MCP Server...");
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
 
-console.log("✅ 抖音 MCP Server 已启动，等待连接...");
+logInfo("✅ 抖音 MCP Server 已启动，等待连接...");

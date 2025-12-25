@@ -1,7 +1,8 @@
 import { DouyinProcessor } from '../services/douyin';
+import { logInfo } from '../utils/logger';
 
 /**
- * 获取抖音视频的无水印下载链接
+ * 获取抖音视频下载链接
  */
 export async function getDouyinDownloadLink(shareLink: string): Promise<{
   status: string;
@@ -49,11 +50,11 @@ export async function downloadDouyinVideo(shareLink: string): Promise<{
     const processor = new DouyinProcessor();
     
     // 解析分享链接
-    console.log('正在解析抖音分享链接...');
+    logInfo('正在解析抖音分享链接...');
     const videoInfo = await processor.parseShareUrl(shareLink);
     
     // 下载视频
-    console.log(`开始下载视频: ${videoInfo.title}`);
+    logInfo(`开始下载视频: ${videoInfo.title}`);
     const filePath = await processor.downloadVideo(videoInfo, (progress) => {
       if (progress.total > 0) {
         const percent = progress.percentage.toFixed(1);
