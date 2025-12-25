@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import * as fs from 'fs';
+import { EventEmitter } from 'events';
 import { DouyinProcessor } from './douyin';
 
 // Mock axios
 vi.mock('axios');
 
-// Mock fs if needed, but for now we might focus on parsing logic
-// We can mock fs for downloadVideo test
+// Mock fs
 vi.mock('fs', async () => {
   const actual = await vi.importActual<typeof import('fs')>('fs');
   return {
@@ -17,6 +17,15 @@ vi.mock('fs', async () => {
     unlinkSync: vi.fn(),
   };
 });
+
+// Mock logger to avoid console spam during tests
+vi.mock('../utils/logger', () => ({
+  logInfo: vi.fn(),
+  logError: vi.fn(),
+  logWarn: vi.fn(),
+  logDebug: vi.fn(),
+  formatLogMessage: vi.fn(),
+}));
 
 describe('抖音处理器 (DouyinProcessor)', () => {
   let processor: DouyinProcessor;
@@ -41,8 +50,6 @@ describe('抖音处理器 (DouyinProcessor)', () => {
               },
               "desc": "测试视频标题"
             };
-            // 简单模拟 HTML 内容匹配
-            // 实际代码是用正则匹配
           </script>
           <body>
             "play_addr":{"url_list":["https://aweme.snssdk.com/aweme/v1/playwm/?video_id=123456"]}
@@ -98,6 +105,86 @@ describe('抖音处理器 (DouyinProcessor)', () => {
       await expect(processor.parseShareUrl(shareText))
         .rejects
         .toThrow('解析抖音分享链接失败: 网络连接超时');
+    });
+  });
+
+  describe('downloadVideo (下载视频)', () => {
+    it('应成功下载视频并报告进度', async () => {
+      const videoInfo = {
+        url: 'https://example.com/video.mp4',
+        title: '测试视频',
+        videoId: '123456'
+      };
+
+      // Mock stream
+      const mockStream = new EventEmitter();
+      (mockStream as any).pipe = vi.fn();
+
+      // Mock axios response
+      (axios.get as any).mockResolvedValue({
+        headers: { 'content-length': '1024' },
+        data: mockStream
+      });
+
+      // Mock file writer
+      const mockWriter = new EventEmitter();
+      (fs.createWriteStream as any).mockReturnValue(mockWriter);
+
+      // Progress callback
+      const onProgress = vi.fn();
+
+      // Start download
+      const downloadPromise = processor.downloadVideo(videoInfo, onProgress);
+
+      // Wait for async operations to setup listeners
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate data chunks
+      mockStream.emit('data', Buffer.alloc(512));
+      mockStream.emit('data', Buffer.alloc(512));
+
+      // Simulate finish
+      mockWriter.emit('finish');
+
+      const result = await downloadPromise;
+
+      expect(result).toContain('123456.mp4');
+      expect(onProgress).toHaveBeenCalledTimes(2);
+      expect(onProgress).toHaveBeenLastCalledWith({
+        downloaded: 1024,
+        total: 1024,
+        percentage: 100
+      });
+    });
+
+    it('当下载流出错时应抛出错误', async () => {
+      const videoInfo = {
+        url: 'https://example.com/video.mp4',
+        title: '测试视频',
+        videoId: '123456'
+      };
+
+      const mockStream = new EventEmitter();
+      (mockStream as any).pipe = vi.fn();
+
+      (axios.get as any).mockResolvedValue({
+        headers: { 'content-length': '1024' },
+        data: mockStream
+      });
+
+      const mockWriter = new EventEmitter();
+      (fs.createWriteStream as any).mockReturnValue(mockWriter);
+
+      const downloadPromise = processor.downloadVideo(videoInfo);
+
+      // Wait for async operations to setup listeners
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate error
+      const error = new Error('Stream Error');
+      mockStream.emit('error', error);
+
+      await expect(downloadPromise).rejects.toThrow('下载视频失败: Stream Error');
     });
   });
 });
