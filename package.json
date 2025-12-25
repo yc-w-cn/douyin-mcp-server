@@ -1,6 +1,6 @@
 {
   "name": "@yc-w-cn/douyin-mcp-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "抖音视频解析与下载工具，支持 MCP 协议",
   "main": "dist/index.js",
   "bin": {
