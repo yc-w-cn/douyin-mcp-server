@@ -13,6 +13,8 @@
     "dev": "tsx src/index.ts",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepublishOnly": "pnpm run build"
   },
   "files": [
@@ -48,11 +50,15 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^25.0.3",
     "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1",
     "vitest": "^4.0.16"
   },
   "engines": {
