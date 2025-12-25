@@ -114,7 +114,7 @@ export class DouyinProcessor {
       const filename = `${videoInfo.videoId}.mp4`;
       const filepath = path.join(this.tempDir, filename);
       
-      console.log(`正在下载视频: ${videoInfo.title}`);
+      console.error(`正在下载视频: ${videoInfo.title}`);
       
       const response = await axios.get(videoInfo.url, {
         headers: HEADERS,
@@ -141,14 +141,14 @@ export class DouyinProcessor {
           // 控制台进度显示
           if (totalSize > 0) {
             const percent = ((downloadedSize / totalSize) * 100).toFixed(1);
-            process.stdout.write(`\r下载进度: ${percent}% (${this.formatBytes(downloadedSize)}/${this.formatBytes(totalSize)})`);
+            process.stderr.write(`\r下载进度: ${percent}% (${this.formatBytes(downloadedSize)}/${this.formatBytes(totalSize)})`);
           }
         });
         
         response.data.pipe(writer);
         
         writer.on('finish', () => {
-          console.log('\n✅ 视频下载完成');
+          console.error('\n✅ 视频下载完成');
           resolve(filepath);
         });
         
